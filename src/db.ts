@@ -4,10 +4,10 @@ let request: IDBOpenDBRequest
 let db: IDBDatabase
 let version = 3
 
-const ClientSchema = z.object({
+export const ClientSchema = z.object({
     id: z.number(),
-    name: z.string(),
-    phone: z.string(),
+    name: z.string().trim().min(2, "O nome precisa de pelo menos 2 caracteres"),
+    phone: z.string().regex(/^\((\d{2})\)\s(\d{1})\s(\d{4})-(\d{4})$/gm, "Número inválido"),
 });
 
 const RepairSchema = z.object({
@@ -88,7 +88,6 @@ export const addData = <T>(storeName: string, data: T): Promise<T | string | nul
         request = indexedDB.open('myDB', version);
 
         request.onsuccess = () => {
-            console.log('request.onsuccess - addData', data);
             db = request.result;
             const tx = db.transaction(storeName, 'readwrite');
             const store = tx.objectStore(storeName);
@@ -101,7 +100,7 @@ export const addData = <T>(storeName: string, data: T): Promise<T | string | nul
             if (error) {
                 resolve(error);
             } else {
-                resolve('Unknown error');
+                resolve('Erro desconhecido!');
             }
         };
     });
@@ -116,9 +115,7 @@ export const getAllData = <T>(storeName: string): Promise<T[] | string | null> =
             const tx = db.transaction(storeName, 'readonly');
             const store = tx.objectStore(storeName);
 
-            const a = IDBKeyRange.only(0)
-
-            const data = store.index("isPaid").getAll(a)
+            const data = store.getAll()
 
             data.onsuccess = () => {
                 resolve(data.result);
