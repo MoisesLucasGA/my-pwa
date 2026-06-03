@@ -1,16 +1,9 @@
-import { Button } from "@/components/ui/button.tsx";
-import {
-  Stores,
-  addData,
-  getRepair,
-  type Client,
-  type Repair,
-  type RepairResponse,
-} from "@/db.ts";
-import { useState } from "react";
 import reactLogo from "@/assets/react.svg";
-import appLogo from "/favicon.ico";
+import { Button } from "@/components/ui/button.tsx";
+import { Stores, addData, type Client, type Repair } from "@/db.ts";
+import { useState } from "react";
 import { NavLink } from "react-router";
+import appLogo from "/favicon.ico";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt?: () => Promise<any>;
@@ -18,7 +11,6 @@ interface BeforeInstallPromptEvent extends Event {
 
 export const Home = () => {
   const [count, setCount] = useState(0);
-  const [repairs, setRepairs] = useState(null as unknown as RepairResponse);
 
   const handleSave = () => {
     addData<Omit<Client, "id">>(Stores.Clients, {
@@ -40,16 +32,7 @@ export const Home = () => {
     });
   };
 
-  const handleGet = async () => {
-    const x = await getRepair(2);
-
-    if (x && typeof x !== "string") {
-      setRepairs(x);
-    }
-
-    console.log(x);
-    console.log(x === null);
-  };
+  const handleGet = async () => {};
 
   window.addEventListener("beforeinstallprompt", (event: Event) => {
     event.preventDefault();
@@ -94,17 +77,11 @@ export const Home = () => {
       </p>
 
       <NavLink to="/clients">Clientes</NavLink>
+      <NavLink to="/repairs">Consertos</NavLink>
 
       <Button id="install" hidden>
         Install
       </Button>
-
-      {repairs && (
-        <div key={repairs.repair.id}>
-          <p>{repairs.client?.name}</p>
-          <p>{repairs.repair.desc}</p>
-        </div>
-      )}
     </>
   );
 };

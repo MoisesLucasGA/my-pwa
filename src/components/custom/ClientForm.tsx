@@ -91,7 +91,9 @@ export const ClientForm = () => {
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="form-clients-phone">Telefone</FieldLabel>
+                  <FieldLabel htmlFor="form-clients-phone">
+                    Telefone (Opcional)
+                  </FieldLabel>
                   <Input
                     {...field}
                     id="form-clients-phone"

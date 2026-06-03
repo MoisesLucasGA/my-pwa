@@ -37,6 +37,7 @@ export const Clients = () => {
             getClients();
           }}
         >
+          Atualizar
           <RefreshCw></RefreshCw>
         </Button>
         <ClientForm />
@@ -44,7 +45,12 @@ export const Clients = () => {
 
       {clients.length > 0 &&
         clients.map((c) => (
-          <ClientCard id={c.id} name={c.name} phone={c.phone}></ClientCard>
+          <ClientCard
+            key={c.id}
+            id={c.id}
+            name={c.name}
+            phone={c.phone}
+          ></ClientCard>
         ))}
       <Button
         variant={"outline"}

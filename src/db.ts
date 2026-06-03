@@ -3,18 +3,22 @@ import * as z from "zod";
 let request: IDBOpenDBRequest
 let db: IDBDatabase
 let version = 3
+const phoneRegex = /^\((\d{2})\)\s(\d{1})\s(\d{4})-(\d{4})$/;
 
 export const ClientSchema = z.object({
     id: z.number(),
     name: z.string().trim().min(2, "O nome precisa de pelo menos 2 caracteres"),
-    phone: z.string().regex(/^\((\d{2})\)\s(\d{1})\s(\d{4})-(\d{4})$/gm, "Número inválido"),
+    phone: z.union([
+        z.literal(""),
+        z.string().regex(phoneRegex, "Número inválido"),
+    ])
 });
 
-const RepairSchema = z.object({
+export const RepairSchema = z.object({
     id: z.number(),
-    clientId: z.number(),
-    desc: z.string(),
-    isPaid: z.number(),
+    clientId: z.number("Escolha um cliente"),
+    desc: z.string().trim().min(2, "Adicione uma descrição"),
+    isPaid: z.number().optional(),
     paidAt: z.date().nullable(),
     price: z.number().min(0),
     createdAt: z.date(),
@@ -35,9 +39,8 @@ export interface RepairInter {
     delivered: Date | null
 }
 
-export interface RepairResponse {
-    client: Client | null
-    repair: Repair
+export type RepairResponse = Repair & {
+    clientName: string
 }
 
 export const Stores = {
@@ -83,12 +86,11 @@ export const initDB = (): Promise<boolean> => {
 
 }
 
-export const addData = <T>(storeName: string, data: T): Promise<T | string | null> => {
+export const addData = async <T>(storeName: string, data: T): Promise<T | string | null> => {
     return new Promise((resolve) => {
         request = indexedDB.open('myDB', version);
-
-        request.onsuccess = () => {
-            db = request.result;
+        request.onsuccess = async () => {
+            db = await request.result;
             const tx = db.transaction(storeName, 'readwrite');
             const store = tx.objectStore(storeName);
             store.add(data);
@@ -200,8 +202,8 @@ export const getRepair = (key: number): Promise<RepairResponse | null | string> 
                     }
 
                     resolve({
-                        client: clientReq.result as Client ?? null,
-                        repair,
+                        clientName: clientReq.result.clientName ?? '',
+                        ...repair,
                     });
                 };
             };
@@ -215,5 +217,64 @@ export const getRepair = (key: number): Promise<RepairResponse | null | string> 
                 }
             };
         }
+    });
+};
+
+export const getAllRepairs = (): Promise<RepairResponse[] | string> => {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open('myDB', version);
+
+        request.onsuccess = () => {
+            const db = request.result;
+            const tx = db.transaction(
+                [Stores.Repairs, Stores.Clients],
+                'readonly'
+            );
+
+            const repairStore = tx.objectStore(Stores.Repairs);
+            const clientStore = tx.objectStore(Stores.Clients);
+
+            const repairs: RepairResponse[] = [];
+
+            const cursorReq = repairStore.openCursor(null, "prev");
+
+            cursorReq.onerror = () => reject(cursorReq.error);
+
+            cursorReq.onsuccess = () => {
+                const cursor = cursorReq.result;
+
+                if (!cursor) {
+                    resolve(repairs);
+                    return;
+                }
+
+                const repair = cursor.value as Repair;
+
+                const clientReq = clientStore.get(repair.clientId);
+
+                clientReq.onerror = () => reject(clientReq.error);
+
+                clientReq.onsuccess = () => {
+                    const client = clientReq.result as Client | undefined;
+
+                    if (!client) {
+                        reject(new Error(`Client ${repair.clientId} not found`));
+                        return;
+                    }
+
+                    repairs.push({
+                        ...repair,
+                        clientName: client.name,
+                    });
+
+                    cursor.continue();
+                };
+            };
+        };
+
+        request.onerror = () => {
+            const error = request.error?.message;
+            resolve(error ?? 'Unknown error');
+        };
     });
 };

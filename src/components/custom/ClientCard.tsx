@@ -13,7 +13,9 @@ export const ClientCard: React.FC<Client> = ({ id, name, phone }: Client) => {
         <UserRound className="" />
         <div>
           <p className=" font-semibold break-all">{name}</p>
-          <p className="text-sm text-muted-foreground"> {phone}</p>
+          <p className="text-sm text-muted-foreground">
+            {phone || "Sem número"}
+          </p>
         </div>
       </div>
       <div className="flex items-center gap-1 flex-wrap justify-end">
