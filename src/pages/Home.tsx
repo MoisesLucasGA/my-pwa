@@ -27,8 +27,8 @@ export const Home = () => {
       isPaid: 1,
       createdAt: new Date(),
       isDelivered: 0,
-      deliveredAt: null,
-      paidAt: null,
+      deliveredAt: undefined,
+      paidAt: undefined,
     });
   };
 

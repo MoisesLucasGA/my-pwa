@@ -19,11 +19,11 @@ export const RepairSchema = z.object({
     clientId: z.number("Escolha um cliente"),
     desc: z.string().trim().min(2, "Adicione uma descrição"),
     isPaid: z.number().optional(),
-    paidAt: z.date().nullable(),
+    paidAt: z.date().optional(),
     price: z.number().min(0),
     createdAt: z.date(),
     isDelivered: z.number(),
-    deliveredAt: z.date().nullable(),
+    deliveredAt: z.date().optional(),
 })
 
 export type Client = z.infer<typeof ClientSchema>
@@ -94,6 +94,28 @@ export const addData = async <T>(storeName: string, data: T): Promise<T | string
             const tx = db.transaction(storeName, 'readwrite');
             const store = tx.objectStore(storeName);
             store.add(data);
+            resolve(data);
+        };
+
+        request.onerror = () => {
+            const error = request.error?.message
+            if (error) {
+                resolve(error);
+            } else {
+                resolve('Erro desconhecido!');
+            }
+        };
+    });
+};
+
+export const updateData = async <T>(storeName: string, data: T): Promise<T | string | null> => {
+    return new Promise((resolve) => {
+        request = indexedDB.open('myDB', version);
+        request.onsuccess = async () => {
+            db = await request.result;
+            const tx = db.transaction(storeName, 'readwrite');
+            const store = tx.objectStore(storeName);
+            store.put(data);
             resolve(data);
         };
 
@@ -257,14 +279,9 @@ export const getAllRepairs = (): Promise<RepairResponse[] | string> => {
                 clientReq.onsuccess = () => {
                     const client = clientReq.result as Client | undefined;
 
-                    if (!client) {
-                        reject(new Error(`Client ${repair.clientId} not found`));
-                        return;
-                    }
-
                     repairs.push({
                         ...repair,
-                        clientName: client.name,
+                        clientName: client?.name || 'Cliente Não Encontrado',
                     });
 
                     cursor.continue();

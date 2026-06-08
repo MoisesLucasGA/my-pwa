@@ -16,8 +16,6 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Plus, RefreshCcw } from "lucide-react";
-import { Controller, useForm } from "react-hook-form";
 import {
   Select,
   SelectContent,
@@ -27,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import {
   addData,
   getAllData,
@@ -36,7 +35,9 @@ import {
   type Repair,
 } from "@/db";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Plus, RefreshCcw } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { NavLink } from "react-router";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -53,8 +54,8 @@ export const RepairForm = () => {
       isPaid: 0,
       isDelivered: 0,
       createdAt: new Date(),
-      deliveredAt: new Date(),
-      paidAt: new Date(),
+      deliveredAt: undefined,
+      paidAt: undefined,
     },
   });
 
@@ -79,8 +80,8 @@ export const RepairForm = () => {
       isPaid: 0,
       price: data.price / 100,
       createdAt: new Date(),
-      deliveredAt: null,
-      paidAt: null,
+      deliveredAt: undefined,
+      paidAt: undefined,
     });
 
     if (typeof res === "string") {
@@ -164,7 +165,7 @@ export const RepairForm = () => {
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="form-repairs-desc">Descrição</FieldLabel>
-                  <Input
+                  <Textarea
                     {...field}
                     id="form-repairs-desc"
                     aria-invalid={fieldState.invalid}
@@ -215,11 +216,7 @@ export const RepairForm = () => {
               <Button variant="outline">Cancelar</Button>
             </DialogClose>
 
-            <Button
-              // disabled={!form.formState.isValid}
-              type="submit"
-              form="form-repair"
-            >
+            <Button type="submit" form="form-repair">
               Salvar
             </Button>
           </DialogFooter>
