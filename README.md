@@ -1,73 +1,52 @@
-# React + TypeScript + Vite
+# About
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is a fully offline app for managing and controlling clothing repairs.
 
-Currently, two official plugins are available:
+# Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- React
+- Vite
+- TypeScript
+- Tailwind
+- ShadcnUI
+- IndexDB
 
-## React Compiler
+# Install
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+To use on your browser, simply:
 
-## Expanding the ESLint configuration
+- Clone the repository `git clone https://github.com/MoisesLucasGA/my-pwa.git`
+- Install the dependencies `pnpm install`
+- Run the project `pnpm dev`
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+To use the installable version, a few extra steps are required, as the option to install a PWA only appears if you are accessing via a secure connection (HTTPS).
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+1. Generate a certificate for your IP using [MKCERT](https://github.com/FiloSottile/mkcert).
+2. Add the certificate to the project's ROOT and modify the path in `vite.config.ts` if necessary.
+3. The same certificate must be accepted on the mobile phone where you want to install it. It is usually located in the Security and Privacy section.
+4. You need to restart your mobile phone's browser for the certificate to take effect.
+5. Run the project with the URL for your exposed network `pnpm dev --host`.
+6. Access the URL while connected to the same network as your PC, and the option to install should appear on the initial screen.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+# PT-BR
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Sobre
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Esse é um app totalmente offline para a gestão e controle de consertos de roupas.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Instalação
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Para usar no navegador basta:
+
+- Clonar o repositório `git clone https://github.com/MoisesLucasGA/my-pwa.git`
+- Instalar as dependências `pnpm install`
+- Executar o projeto `pnpm dev`
+
+Para usar a versão instalável é necessário alguns passos extras, já que a opção para instalar um PWA só aparece caso você esteja acessando via uma conexão segura (HTTPS).
+
+1. Gere um certificado para seu IP usando o [MKCERT](https://github.com/FiloSottile/mkcert).
+2. Adicione o certificado no ROOT do projeto e modifique o caminho no `vite.config.ts` caso necessário.
+3. O mesmo certificado deve ser aceito no celular que deseja instalar. Normalmente fica na seção de Segurança e Privacidade.
+4. É necessário reinicializar o navegador do celular, para que o certificado entre em ação.
+5. Execute o projeto com a URL para sua rede exposta `pnpm dev --host`.
+6. Acesse a URL estando conectado a mesma rede que seu PC e a opção para instalar deve aparecer na tela inicial.
