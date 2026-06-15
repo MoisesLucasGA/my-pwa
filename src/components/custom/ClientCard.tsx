@@ -1,9 +1,21 @@
-import type React from "react";
-import { Button } from "../ui/button";
-import type { Client } from "@/db";
+import { deleteData, Stores, type Client } from "@/db";
 import { UserRound } from "lucide-react";
+import type React from "react";
+import { toast } from "sonner";
+import { ClientEdit } from "./ClientEdit";
+import { DeleteDialog } from "./DeleteDialog";
 
 export const ClientCard: React.FC<Client> = ({ id, name, phone }: Client) => {
+  const handleDelete = async () => {
+    const res = await deleteData(Stores.Clients, id);
+
+    if (typeof res === "boolean") {
+      toast.info("Cliente excluído com sucesso!", { position: "top-center" });
+    } else {
+      toast.error(res, { position: "top-center" });
+    }
+  };
+
   return (
     <div
       key={id}
@@ -19,8 +31,12 @@ export const ClientCard: React.FC<Client> = ({ id, name, phone }: Client) => {
         </div>
       </div>
       <div className="flex items-center gap-1 flex-wrap justify-end">
-        <Button variant={"outline"}>Editar</Button>
-        <Button variant={"destructive"}>Excluir</Button>
+        <ClientEdit data={{ id, name, phone }}></ClientEdit>
+        <DeleteDialog
+          title="Excluir Cliente"
+          subtitle="Tem certeza que deseja excluir o cliente?"
+          handleDelete={handleDelete}
+        />
       </div>
     </div>
   );

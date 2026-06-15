@@ -43,6 +43,7 @@ import { toast } from "sonner";
 import * as z from "zod";
 
 export const RepairForm = () => {
+  const [open, setOpen] = useState<boolean>(false);
   const [clients, setClients] = useState<Client[]>([]);
   const form = useForm<z.infer<typeof RepairSchema>>({
     resolver: zodResolver(RepairSchema),
@@ -68,6 +69,10 @@ export const RepairForm = () => {
     }
   }
 
+  const handleOpen = () => {
+    setOpen(!open);
+  };
+
   useEffect(() => {
     getClients();
   }, []);
@@ -87,20 +92,23 @@ export const RepairForm = () => {
     if (typeof res === "string") {
       toast.error(res, { position: "top-center" });
     } else {
-      toast.info("Cliente cadastrado com sucesso!", { position: "top-center" });
+      toast.info("Conserto cadastrado com sucesso!", {
+        position: "top-center",
+      });
       form.reset();
+      handleOpen();
     }
   }
 
   return (
-    <Dialog>
+    <Dialog open={open}>
       <form id="form-repair" onSubmit={form.handleSubmit(onSubmit)}>
         <DialogTrigger asChild>
-          <Button>
+          <Button onClick={handleOpen}>
             Novo Conserto <Plus />
           </Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-sm">
+        <DialogContent showCloseButton={false} className="sm:max-w-sm">
           <DialogHeader>
             <DialogTitle>Novo Conserto</DialogTitle>
             <DialogDescription>
@@ -213,7 +221,9 @@ export const RepairForm = () => {
 
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline">Cancelar</Button>
+              <Button variant="outline" onClick={handleOpen}>
+                Cancelar
+              </Button>
             </DialogClose>
 
             <Button type="submit" form="form-repair">

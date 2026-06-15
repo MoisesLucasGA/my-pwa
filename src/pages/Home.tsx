@@ -1,39 +1,12 @@
-import reactLogo from "@/assets/react.svg";
 import { Button } from "@/components/ui/button.tsx";
-import { Stores, addData, type Client, type Repair } from "@/db.ts";
-import { useState } from "react";
+import { ArrowDown, ArrowUpLeft, ArrowUpRight } from "lucide-react";
 import { NavLink } from "react-router";
-import appLogo from "/favicon.ico";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt?: () => Promise<any>;
 }
 
 export const Home = () => {
-  const [count, setCount] = useState(0);
-
-  const handleSave = () => {
-    addData<Omit<Client, "id">>(Stores.Clients, {
-      name: "Maria",
-      phone: "22",
-    });
-  };
-
-  const handleSaveRepair = () => {
-    addData<Omit<Repair, "id">>(Stores.Repairs, {
-      desc: "Desc",
-      clientId: 1,
-      price: 10,
-      isPaid: 1,
-      createdAt: new Date(),
-      isDelivered: 0,
-      deliveredAt: undefined,
-      paidAt: undefined,
-    });
-  };
-
-  const handleGet = async () => {};
-
   window.addEventListener("beforeinstallprompt", (event: Event) => {
     event.preventDefault();
     const installButton = document.querySelector("#install");
@@ -51,37 +24,47 @@ export const Home = () => {
   });
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={appLogo} className="logo" alt="my-pwa logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="h-dvh flex flex-col justify-between items-center pb-2 bg-[#f7f2e5] bg-size-[10px_10px] opacity-80 bg-radial from-primary from-[1px] to-accent to-[1px]">
+      <div className="">
+        <h1 className="text-8xl font-extrabold text-black text-center">
+          Bem-Vinda
+        </h1>
       </div>
-      <h1>my-pwa</h1>
-      <div className="card">
-        <Button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </Button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-        <Button onClick={handleSave}>Save Client</Button>
-        <Button onClick={handleSaveRepair}>Save repair</Button>
-        <Button onClick={handleGet}>GetAll</Button>
+      <div className="max-w-1/2 p-2 bg-accent rounded-xl shadow-[3px_4px_4px] shadow-gray-500">
+        <h3 className="font-bold text-xl text-black text-center">
+          Aqui você vai poder gerenciar seus clientes e consertos.
+        </h3>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <div className="flex flex-row gap-2 items-center justify-around">
+        <NavLink
+          to="/clients"
+          className="bg-primary rounded-2xl pb-2 pt-2 pl-4 pr-4 text-accent font-medium flex flex-row items-center justify-center"
+        >
+          <span className="flex flex-row items-center justify-around gap-1">
+            <ArrowUpLeft />
+            Clientes
+          </span>
+        </NavLink>
+        <NavLink
+          to="/repairs"
+          className="bg-primary rounded-2xl pb-2 pt-2 pl-4 pr-4 text-accent font-medium flex flex-row items-center justify-center"
+        >
+          <span className="flex flex-row items-center justify-around gap-1">
+            Consertos
+            <ArrowUpRight />
+          </span>
+        </NavLink>
+      </div>
 
-      <NavLink to="/clients">Clientes</NavLink>
-      <NavLink to="/repairs">Consertos</NavLink>
-
-      <Button id="install" hidden>
-        Install
+      <Button
+        id="install"
+        variant={"secondary"}
+        hidden
+        className="absolute top-4 right-4 z-10 shadow-[3px_4px_4px] shadow-gray-500"
+      >
+        Instalar
+        <ArrowDown></ArrowDown>
       </Button>
-    </>
+    </div>
   );
 };

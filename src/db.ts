@@ -130,6 +130,40 @@ export const updateData = async <T>(storeName: string, data: T): Promise<T | str
     });
 };
 
+export const deleteData = async (storeName: string, key: number): Promise<string | boolean> => {
+    return new Promise((resolve) => {
+        request = indexedDB.open('myDB', version);
+        request.onsuccess = async () => {
+            db = await request.result;
+            const tx = db.transaction(storeName, 'readwrite');
+            const store = tx.objectStore(storeName);
+            const data = store.get(key)
+
+            data.onsuccess = () => {
+                if (!data.result) {
+                    resolve("Item não encontrado")
+                } else {
+                    store.delete(key)
+                    resolve(true);
+                }
+            }
+            data.onerror = () => {
+                resolve(data.error?.message || 'Erro desconhecido')
+            }
+
+        };
+
+        request.onerror = () => {
+            const error = request.error?.message
+            if (error) {
+                resolve(error);
+            } else {
+                resolve('Erro desconhecido!');
+            }
+        };
+    });
+};
+
 export const getAllData = <T>(storeName: string): Promise<T[] | string | null> => {
     return new Promise((resolve) => {
         request = indexedDB.open('myDB', version);
@@ -188,7 +222,6 @@ export const getDataByKey = <T>(storeName: string, key: number): Promise<T | str
         };
     });
 };
-
 
 export const getRepair = (key: number): Promise<RepairResponse | null | string> => {
     return new Promise((resolve, reject) => {
@@ -272,7 +305,7 @@ export const getAllRepairs = (): Promise<RepairResponse[] | string> => {
 
                 const repair = cursor.value as Repair;
 
-                const clientReq = clientStore.get(repair.clientId);
+                const clientReq = clientStore.get(repair.clientId || -1);
 
                 clientReq.onerror = () => reject(clientReq.error);
 

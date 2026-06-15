@@ -3,7 +3,7 @@ import { RepairForm } from "@/components/custom/RepairForm";
 import { Button } from "@/components/ui/button";
 import { getAllRepairs, type RepairResponse } from "@/db";
 import { RefreshCw } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const Repairs = () => {
   const [repairs, setRepairs] = useState<RepairResponse[]>([]);
@@ -17,8 +17,12 @@ export const Repairs = () => {
     }
   }
 
+  useEffect(() => {
+    getRepairs();
+  }, []);
+
   return (
-    <div className="flex w-full h-full flex-col">
+    <div className="flex w-full h-full flex-col pt-2 pb-2 pl-4 pr-4 overflow-auto">
       <div className="flex flex-col items-start">
         <h1 className="text-4xl font-extrabold tracking-tight text-balance">
           Consertos

@@ -1,9 +1,10 @@
-import type { RepairResponse } from "@/db";
-import type React from "react";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
-import { RepairEdit } from "./RepairEdit";
+import { deleteData, Stores, type RepairResponse } from "@/db";
 import { format } from "date-fns";
+import type React from "react";
+import { toast } from "sonner";
+import { Badge } from "../ui/badge";
+import { DeleteDialog } from "./DeleteDialog";
+import { RepairEdit } from "./RepairEdit";
 
 interface RepairCardProps {
   data: RepairResponse;
@@ -12,6 +13,16 @@ interface RepairCardProps {
 export const RepairCard: React.FC<RepairCardProps> = ({
   data,
 }: RepairCardProps) => {
+  const handleDelete = async () => {
+    const res = await deleteData(Stores.Repairs, data.id);
+
+    if (typeof res === "boolean") {
+      toast.info("Conserto excluído com sucesso!", { position: "top-center" });
+    } else {
+      toast.error(res, { position: "top-center" });
+    }
+  };
+
   return (
     <div className="flex flex-col p-2 border rounded-md m-1 shadow justify-between">
       <div className="flex flex-col">
@@ -59,7 +70,11 @@ export const RepairCard: React.FC<RepairCardProps> = ({
         </div>
         <div className="flex gap-1">
           <RepairEdit data={data}></RepairEdit>
-          <Button variant={"destructive"}>Excluir</Button>
+          <DeleteDialog
+            title="Excluir Conserto"
+            subtitle="Tem certeza que deseja excluir o conserto?"
+            handleDelete={handleDelete}
+          />
         </div>
       </div>
     </div>
