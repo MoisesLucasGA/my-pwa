@@ -115,7 +115,9 @@ export const RepairForm = () => {
               Cadastre um novo conserto preenchendo as informações abaixo
             </DialogDescription>
           </DialogHeader>
-          <NavLink to="/clients">Cliente novo? cadastre aqui.</NavLink>
+          <NavLink to="/clients" className={"text-blue-500 underline"}>
+            Cliente novo? cadastre aqui.
+          </NavLink>
           <FieldGroup>
             <Controller
               name="clientId"

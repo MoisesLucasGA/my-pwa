@@ -23,8 +23,10 @@ import * as z from "zod";
 import { addData, ClientSchema, Stores, type Client } from "@/db";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { useState } from "react";
 
 export const ClientForm = () => {
+  const [open, setOpen] = useState<boolean>(false);
   const form = useForm<z.infer<typeof ClientSchema>>({
     resolver: zodResolver(ClientSchema),
     mode: "onSubmit",
@@ -46,18 +48,23 @@ export const ClientForm = () => {
     } else {
       toast.info("Cliente cadastrado com sucesso!", { position: "top-center" });
       form.reset();
+      handleOpen();
     }
   }
 
+  const handleOpen = () => {
+    setOpen(!open);
+  };
+
   return (
-    <Dialog>
+    <Dialog open={open}>
       <form id="form-clients" onSubmit={form.handleSubmit(onSubmit)}>
         <DialogTrigger asChild>
-          <Button>
+          <Button onClick={handleOpen}>
             Novo Cliente <UserPlus2></UserPlus2>
           </Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-sm">
+        <DialogContent showCloseButton={false} className="sm:max-w-sm">
           <DialogHeader>
             <DialogTitle>Novo Cliente</DialogTitle>
             <DialogDescription>
@@ -124,7 +131,9 @@ export const ClientForm = () => {
 
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline">Cancelar</Button>
+              <Button variant="outline" onClick={handleOpen}>
+                Cancelar
+              </Button>
             </DialogClose>
 
             <Button type="submit" form="form-clients">
