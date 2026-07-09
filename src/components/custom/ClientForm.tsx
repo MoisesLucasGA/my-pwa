@@ -23,9 +23,13 @@ import * as z from "zod";
 import { addData, ClientSchema, Stores, type Client } from "@/db";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { useState } from "react";
+import React, { useState } from "react";
 
-export const ClientForm = () => {
+interface ClientFormProps {
+  onSave?: () => void;
+}
+
+export const ClientForm: React.FC<ClientFormProps> = ({ onSave }) => {
   const [open, setOpen] = useState<boolean>(false);
   const form = useForm<z.infer<typeof ClientSchema>>({
     resolver: zodResolver(ClientSchema),
@@ -49,6 +53,7 @@ export const ClientForm = () => {
       toast.info("Cliente cadastrado com sucesso!", { position: "top-center" });
       form.reset();
       handleOpen();
+      onSave?.();
     }
   }
 

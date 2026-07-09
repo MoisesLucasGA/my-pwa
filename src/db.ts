@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import * as z from "zod";
 
 let request: IDBOpenDBRequest
@@ -28,16 +29,6 @@ export const RepairSchema = z.object({
 
 export type Client = z.infer<typeof ClientSchema>
 export type Repair = z.infer<typeof RepairSchema>
-
-export interface RepairInter {
-    id: number
-    clientId: number
-    desc: string
-    paid: Date | number
-    price: number | null
-    createdAt: Date
-    delivered: Date | null
-}
 
 export type RepairResponse = Repair & {
     clientName: string
@@ -164,7 +155,7 @@ export const deleteData = async (storeName: string, key: number): Promise<string
     });
 };
 
-export const getAllData = <T>(storeName: string): Promise<T[] | string | null> => {
+export const getAllData = <T>(storeName: string): Promise<T[] | string> => {
     return new Promise((resolve) => {
         request = indexedDB.open('myDB', version);
 
@@ -179,7 +170,7 @@ export const getAllData = <T>(storeName: string): Promise<T[] | string | null> =
                 resolve(data.result);
             }
             data.onerror = () => {
-                resolve(null)
+                resolve([] as T[])
             }
         };
 
@@ -328,3 +319,51 @@ export const getAllRepairs = (): Promise<RepairResponse[] | string> => {
         };
     });
 };
+
+export const ExportData = async () => {
+    const repairs = await getAllData<Repair>(Stores.Repairs)
+    const clients = await getAllData<Client>(Stores.Clients)
+
+    const data = {
+        repairs: typeof repairs === 'string' ? [] : repairs as Repair[],
+        clients: typeof clients === 'string' ? [] : clients as Client[]
+    }
+
+    const content = JSON.stringify(data)
+
+    const name = `db_${format(new Date(), 'dd-MM-yyy HH_mm_ss')}.json`
+
+    let element = document.createElement('a');
+    element.setAttribute('href',
+        'data:text/plain;charset=utf-8, '
+        + encodeURIComponent(content));
+    element.setAttribute('download', name);
+    document.body.appendChild(element);
+    element.click();
+
+    document.body.removeChild(element);
+}
+
+export const ImportData = async (data: Blob) => {
+    const content = JSON.parse(await data.text())
+
+    const clients: Client[] = content.clients || []
+    const repairs: Repair[] = content.repairs || []
+
+    // Making sure to not add repairs without clients
+    if (clients) {
+        for (const c of clients) {
+            await addData<Client>(Stores.Clients, c)
+        }
+
+        for (const r of repairs) {
+            const repair: Repair = {
+                ...r,
+                createdAt: new Date(r.createdAt),
+                deliveredAt: r.deliveredAt ? new Date(r.deliveredAt) : undefined,
+                paidAt: r.paidAt ? new Date(r.paidAt) : undefined,
+            }
+            await addData<Repair>(Stores.Repairs, repair)
+        }
+    }
+}

@@ -40,7 +40,11 @@ export const Repairs = () => {
           Atualizar
           <RefreshCw></RefreshCw>
         </Button>
-        <RepairForm />
+        <RepairForm
+          onSave={() => {
+            getRepairs();
+          }}
+        />
       </div>
 
       {repairs.length > 0 &&

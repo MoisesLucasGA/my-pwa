@@ -36,13 +36,17 @@ import {
 } from "@/db";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, RefreshCcw } from "lucide-react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { NavLink } from "react-router";
 import { toast } from "sonner";
 import * as z from "zod";
 
-export const RepairForm = () => {
+interface RepairFormProps {
+  onSave?: () => void;
+}
+
+export const RepairForm: React.FC<RepairFormProps> = ({ onSave }) => {
   const [open, setOpen] = useState<boolean>(false);
   const [clients, setClients] = useState<Client[]>([]);
   const form = useForm<z.infer<typeof RepairSchema>>({
@@ -96,6 +100,7 @@ export const RepairForm = () => {
         position: "top-center",
       });
       form.reset();
+      onSave?.();
       handleOpen();
     }
   }

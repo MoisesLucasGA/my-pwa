@@ -35,24 +35,32 @@ export const Home = () => {
           Aqui você vai poder gerenciar seus clientes e consertos.
         </h3>
       </div>
-      <div className="flex flex-row gap-2 items-center justify-around">
+      <div className="flex flex-col gap-2 items-center justify-around">
+        <div className="flex flex-row gap-2 items-center justify-around">
+          <NavLink
+            to="/clients"
+            className="bg-primary rounded-2xl pb-2 pt-2 pl-4 pr-4 text-accent font-medium flex flex-row items-center justify-center"
+          >
+            <span className="flex flex-row items-center justify-around gap-1">
+              <ArrowUpLeft />
+              Clientes
+            </span>
+          </NavLink>
+          <NavLink
+            to="/repairs"
+            className="bg-primary rounded-2xl pb-2 pt-2 pl-4 pr-4 text-accent font-medium flex flex-row items-center justify-center"
+          >
+            <span className="flex flex-row items-center justify-around gap-1">
+              Consertos
+              <ArrowUpRight />
+            </span>
+          </NavLink>
+        </div>
         <NavLink
-          to="/clients"
+          to="/config"
           className="bg-primary rounded-2xl pb-2 pt-2 pl-4 pr-4 text-accent font-medium flex flex-row items-center justify-center"
         >
-          <span className="flex flex-row items-center justify-around gap-1">
-            <ArrowUpLeft />
-            Clientes
-          </span>
-        </NavLink>
-        <NavLink
-          to="/repairs"
-          className="bg-primary rounded-2xl pb-2 pt-2 pl-4 pr-4 text-accent font-medium flex flex-row items-center justify-center"
-        >
-          <span className="flex flex-row items-center justify-around gap-1">
-            Consertos
-            <ArrowUpRight />
-          </span>
+          Configurações
         </NavLink>
       </div>
 

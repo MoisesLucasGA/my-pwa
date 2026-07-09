@@ -40,7 +40,11 @@ export const Clients = () => {
           Atualizar
           <RefreshCw></RefreshCw>
         </Button>
-        <ClientForm />
+        <ClientForm
+          onSave={() => {
+            getClients();
+          }}
+        />
       </div>
 
       {clients.length > 0 &&

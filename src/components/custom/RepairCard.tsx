@@ -36,7 +36,9 @@ export const RepairCard: React.FC<RepairCardProps> = ({
           </p>
         </div>
         <p className="text-lg text-muted-foreground">
-          {new Intl.DateTimeFormat("pt-BR").format(data.createdAt)}
+          {data?.createdAt
+            ? `${format(data?.createdAt, "dd/MM/yyyy")}`
+            : "Sem Data"}
         </p>
         <div>
           <p className="pt-2 wrap-break-word text-justify text-lg">

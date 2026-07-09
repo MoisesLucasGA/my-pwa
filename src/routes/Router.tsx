@@ -1,4 +1,5 @@
 import { Clients } from "@/pages/Clients";
+import { Config } from "@/pages/Config";
 import { Home } from "@/pages/Home";
 import { Repairs } from "@/pages/Repairs";
 import { BrowserRouter, Route, Routes } from "react-router";
@@ -10,6 +11,7 @@ export const Router = () => {
         <Route path="/" element={<Home />} />
         <Route path="/clients" element={<Clients />} />
         <Route path="/repairs" element={<Repairs />} />
+        <Route path="/config" element={<Config />} />
       </Routes>
     </BrowserRouter>
   );
