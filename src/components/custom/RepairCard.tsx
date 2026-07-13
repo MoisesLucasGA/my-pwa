@@ -1,23 +1,28 @@
-import { deleteData, Stores, type RepairResponse } from "@/db";
+import { deleteData, Stores } from "@/db";
+import { getRepairsThunk, type RepairRedux } from "@/redux/slices/RepairSlice";
+import type { AppDispatch } from "@/redux/store";
 import { format } from "date-fns";
 import type React from "react";
+import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import { Badge } from "../ui/badge";
 import { DeleteDialog } from "./DeleteDialog";
 import { RepairEdit } from "./RepairEdit";
 
 interface RepairCardProps {
-  data: RepairResponse;
+  data: RepairRedux;
 }
 
 export const RepairCard: React.FC<RepairCardProps> = ({
   data,
 }: RepairCardProps) => {
+  const dispatch = useDispatch<AppDispatch>();
   const handleDelete = async () => {
     const res = await deleteData(Stores.Repairs, data.id);
 
     if (typeof res === "boolean") {
       toast.info("Conserto excluído com sucesso!", { position: "top-center" });
+      dispatch(getRepairsThunk());
     } else {
       toast.error(res, { position: "top-center" });
     }
@@ -37,7 +42,7 @@ export const RepairCard: React.FC<RepairCardProps> = ({
         </div>
         <p className="text-lg text-muted-foreground">
           {data?.createdAt
-            ? `${format(data?.createdAt, "dd/MM/yyyy")}`
+            ? `${format(new Date(data?.createdAt), "dd/MM/yyyy")}`
             : "Sem Data"}
         </p>
         <div>
@@ -54,7 +59,9 @@ export const RepairCard: React.FC<RepairCardProps> = ({
               variant={"outline"}
             >
               Pago
-              {data?.paidAt ? `: ${format(data.paidAt, "dd/MM/yyyy")}` : ""}
+              {data?.paidAt
+                ? `: ${format(new Date(data.paidAt), "dd/MM/yyyy")}`
+                : ""}
             </Badge>
           ) : (
             <Badge
@@ -72,7 +79,7 @@ export const RepairCard: React.FC<RepairCardProps> = ({
             >
               Entregue
               {data?.deliveredAt
-                ? `: ${format(data.deliveredAt, "dd/MM/yyyy")}`
+                ? `: ${format(new Date(data.deliveredAt), "dd/MM/yyyy")}`
                 : ""}
             </Badge>
           ) : (

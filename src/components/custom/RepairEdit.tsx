@@ -18,33 +18,34 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  RepairSchema,
-  Stores,
-  updateData,
-  type Repair,
-  type RepairResponse,
-} from "@/db";
+import { RepairSchema, Stores, updateData, type Repair } from "@/db";
+import { getRepairsThunk, type RepairRedux } from "@/redux/slices/RepairSlice";
+import type { AppDispatch } from "@/redux/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type React from "react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import * as z from "zod";
 
 interface RepairEditProps {
-  data: RepairResponse;
+  data: RepairRedux;
 }
 
 export const RepairEdit: React.FC<RepairEditProps> = ({
   data,
 }: RepairEditProps) => {
+  const dispatch = useDispatch<AppDispatch>();
   const [open, setOpen] = useState<boolean>(false);
   const form = useForm<z.infer<typeof RepairSchema>>({
     resolver: zodResolver(RepairSchema),
     mode: "onSubmit",
     defaultValues: {
       ...data,
+      createdAt: new Date(data.createdAt),
+      paidAt: data.paidAt ? new Date(data.paidAt) : undefined,
+      deliveredAt: data.deliveredAt ? new Date(data.deliveredAt) : undefined,
       price: data.price * 100,
     },
   });
@@ -67,6 +68,7 @@ export const RepairEdit: React.FC<RepairEditProps> = ({
         position: "top-center",
       });
       form.reset();
+      dispatch(getRepairsThunk());
     }
     handleOpen();
   }
@@ -155,7 +157,7 @@ export const RepairEdit: React.FC<RepairEditProps> = ({
                   </FieldLabel>
                   <DatePicker
                     id="form-repair-edit-paidAt"
-                    defaultDate={data.paidAt}
+                    defaultDate={field.value}
                     setDate={(value) => {
                       field.onChange(value);
                     }}
@@ -177,7 +179,7 @@ export const RepairEdit: React.FC<RepairEditProps> = ({
                   </FieldLabel>
                   <DatePicker
                     id="form-repair-edit-deliveredAt"
-                    defaultDate={data.deliveredAt}
+                    defaultDate={field.value}
                     setDate={(value) => {
                       field.onChange(value);
                     }}

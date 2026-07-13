@@ -46,10 +46,7 @@ export const DeleteDialog: React.FC<DeleteDialogProps> = ({
       <DialogContent showCloseButton={false} className="sm:max-w-sm">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>
-            {subtitle}
-            {/* Tem certeza que deseja excluir o conserto? */}
-          </DialogDescription>
+          <DialogDescription>{subtitle}</DialogDescription>
         </DialogHeader>
 
         <DialogFooter>

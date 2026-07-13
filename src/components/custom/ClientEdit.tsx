@@ -17,10 +17,13 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { ClientSchema, Stores, updateData, type Client } from "@/db";
+import { getClientsThunk } from "@/redux/slices/ClientSlice";
+import type { AppDispatch } from "@/redux/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type React from "react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import * as z from "zod";
 
@@ -32,6 +35,7 @@ export const ClientEdit: React.FC<ClientEditProps> = ({
   data,
 }: ClientEditProps) => {
   const [open, setOpen] = useState<boolean>(false);
+  const dispatch = useDispatch<AppDispatch>();
   const form = useForm<z.infer<typeof ClientSchema>>({
     resolver: zodResolver(ClientSchema),
     mode: "onSubmit",
@@ -55,6 +59,7 @@ export const ClientEdit: React.FC<ClientEditProps> = ({
         position: "top-center",
       });
       form.reset();
+      dispatch(getClientsThunk());
     }
     handleOpen();
   }

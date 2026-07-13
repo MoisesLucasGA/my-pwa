@@ -26,29 +26,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  addData,
-  getAllData,
-  RepairSchema,
-  Stores,
-  type Client,
-  type Repair,
-} from "@/db";
+import { addData, RepairSchema, Stores, type Repair } from "@/db";
+import { getClientsThunk } from "@/redux/slices/ClientSlice";
+import { getRepairsThunk } from "@/redux/slices/RepairSlice";
+import type { AppDispatch, RootState } from "@/redux/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, RefreshCcw } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
 import { NavLink } from "react-router";
 import { toast } from "sonner";
 import * as z from "zod";
 
-interface RepairFormProps {
-  onSave?: () => void;
-}
-
-export const RepairForm: React.FC<RepairFormProps> = ({ onSave }) => {
+export const RepairForm = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { clients } = useSelector((state: RootState) => state.client);
   const [open, setOpen] = useState<boolean>(false);
-  const [clients, setClients] = useState<Client[]>([]);
   const form = useForm<z.infer<typeof RepairSchema>>({
     resolver: zodResolver(RepairSchema),
     mode: "onSubmit",
@@ -64,21 +58,14 @@ export const RepairForm: React.FC<RepairFormProps> = ({ onSave }) => {
     },
   });
 
-  async function getClients() {
-    setClients([]);
-    const res = await getAllData<Client>(Stores.Clients);
-
-    if (typeof res !== "string") {
-      setClients(res || []);
-    }
-  }
-
   const handleOpen = () => {
     setOpen(!open);
   };
 
   useEffect(() => {
-    getClients();
+    if (clients.length === 0) {
+      dispatch(getClientsThunk());
+    }
   }, []);
 
   async function onSubmit(data: z.infer<typeof RepairSchema>) {
@@ -100,7 +87,7 @@ export const RepairForm: React.FC<RepairFormProps> = ({ onSave }) => {
         position: "top-center",
       });
       form.reset();
-      onSave?.();
+      dispatch(getRepairsThunk());
       handleOpen();
     }
   }
@@ -134,11 +121,7 @@ export const RepairForm: React.FC<RepairFormProps> = ({ onSave }) => {
                     htmlFor="form-repairs-clientId"
                   >
                     Cliente
-                    <Button
-                      onClick={() => {
-                        getClients();
-                      }}
-                    >
+                    <Button onClick={() => dispatch(getClientsThunk())}>
                       <RefreshCcw />
                     </Button>
                   </FieldLabel>

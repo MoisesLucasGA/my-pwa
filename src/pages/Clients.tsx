@@ -1,24 +1,20 @@
 import { ClientCard } from "@/components/custom/ClientCard";
 import { ClientForm } from "@/components/custom/ClientForm";
 import { Button } from "@/components/ui/button";
-import { getAllData, Stores, type Client } from "@/db";
+import { getClientsThunk } from "@/redux/slices/ClientSlice";
+import type { AppDispatch, RootState } from "@/redux/store";
 import { RefreshCw } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 export const Clients = () => {
-  const [clients, setClients] = useState<Client[]>([]);
-
-  async function getClients() {
-    setClients([]);
-    const res = await getAllData<Client>(Stores.Clients);
-
-    if (typeof res !== "string") {
-      setClients(res || []);
-    }
-  }
+  const dispatch = useDispatch<AppDispatch>();
+  const { clients } = useSelector((state: RootState) => state.client);
 
   useEffect(() => {
-    getClients();
+    if (clients.length === 0) {
+      dispatch(getClientsThunk());
+    }
   }, []);
 
   return (
@@ -32,30 +28,22 @@ export const Clients = () => {
         </h3>
       </div>
       <div className="flex self-end gap-1 pt-3 pb-3">
-        <Button
-          onClick={() => {
-            getClients();
-          }}
-        >
+        <Button onClick={() => dispatch(getClientsThunk())}>
           Atualizar
           <RefreshCw></RefreshCw>
         </Button>
-        <ClientForm
-          onSave={() => {
-            getClients();
-          }}
-        />
+        <ClientForm />
       </div>
 
-      {clients.length > 0 &&
-        clients.map((c) => (
-          <ClientCard
-            key={c.id}
-            id={c.id}
-            name={c.name}
-            phone={c.phone}
-          ></ClientCard>
-        ))}
+      {clients.map((c) => (
+        <ClientCard
+          key={c.id}
+          id={c.id}
+          name={c.name}
+          phone={c.phone}
+        ></ClientCard>
+      ))}
+
       <Button
         variant={"outline"}
         onClick={() => {

@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -8,9 +9,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { UserPlus2 } from "lucide-react";
-import { Controller, useForm } from "react-hook-form";
 import {
   Field,
   FieldError,
@@ -18,19 +16,20 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-
-import * as z from "zod";
 import { addData, ClientSchema, Stores, type Client } from "@/db";
+import { getClientsThunk } from "@/redux/slices/ClientSlice";
+import type { AppDispatch } from "@/redux/store";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { UserPlus2 } from "lucide-react";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
 import { toast } from "sonner";
-import React, { useState } from "react";
+import * as z from "zod";
 
-interface ClientFormProps {
-  onSave?: () => void;
-}
-
-export const ClientForm: React.FC<ClientFormProps> = ({ onSave }) => {
+export const ClientForm = () => {
   const [open, setOpen] = useState<boolean>(false);
+  const dispatch = useDispatch<AppDispatch>();
   const form = useForm<z.infer<typeof ClientSchema>>({
     resolver: zodResolver(ClientSchema),
     mode: "onSubmit",
@@ -53,7 +52,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({ onSave }) => {
       toast.info("Cliente cadastrado com sucesso!", { position: "top-center" });
       form.reset();
       handleOpen();
-      onSave?.();
+      dispatch(getClientsThunk());
     }
   }
 

@@ -1,16 +1,21 @@
 import { deleteData, Stores, type Client } from "@/db";
+import { getClientsThunk } from "@/redux/slices/ClientSlice";
+import type { AppDispatch } from "@/redux/store";
 import { UserRound } from "lucide-react";
 import type React from "react";
+import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import { ClientEdit } from "./ClientEdit";
 import { DeleteDialog } from "./DeleteDialog";
 
 export const ClientCard: React.FC<Client> = ({ id, name, phone }: Client) => {
+  const dispatch = useDispatch<AppDispatch>();
   const handleDelete = async () => {
     const res = await deleteData(Stores.Clients, id);
 
     if (typeof res === "boolean") {
       toast.info("Cliente excluído com sucesso!", { position: "top-center" });
+      dispatch(getClientsThunk());
     } else {
       toast.error(res, { position: "top-center" });
     }

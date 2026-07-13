@@ -1,24 +1,20 @@
 import { RepairCard } from "@/components/custom/RepairCard";
 import { RepairForm } from "@/components/custom/RepairForm";
 import { Button } from "@/components/ui/button";
-import { getAllRepairs, type RepairResponse } from "@/db";
+import { getRepairsThunk } from "@/redux/slices/RepairSlice";
+import type { AppDispatch, RootState } from "@/redux/store";
 import { RefreshCw } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 export const Repairs = () => {
-  const [repairs, setRepairs] = useState<RepairResponse[]>([]);
-
-  async function getRepairs() {
-    setRepairs([]);
-    const res = await getAllRepairs();
-
-    if (typeof res !== "string") {
-      setRepairs(res || []);
-    }
-  }
+  const dispatch = useDispatch<AppDispatch>();
+  const { repairs } = useSelector((state: RootState) => state.repair);
 
   useEffect(() => {
-    getRepairs();
+    if (repairs.length === 0) {
+      dispatch(getRepairsThunk());
+    }
   }, []);
 
   return (
@@ -32,19 +28,11 @@ export const Repairs = () => {
         </h3>
       </div>
       <div className="flex self-end gap-1 pt-3 pb-3">
-        <Button
-          onClick={() => {
-            getRepairs();
-          }}
-        >
+        <Button onClick={() => dispatch(getRepairsThunk())}>
           Atualizar
           <RefreshCw></RefreshCw>
         </Button>
-        <RepairForm
-          onSave={() => {
-            getRepairs();
-          }}
-        />
+        <RepairForm />
       </div>
 
       {repairs.length > 0 &&
